@@ -43,4 +43,4 @@ Slash Commands 是一個為 Obsidian 設計的插件，它為您帶來類似 Not
 本插件採用 MIT 授權條款。
 
 ## 回報問題
-如果您在使用過程中遇到任何問題，請在 GitHub 上提交 issue。 
+如果您在使用過程中遇到任何問題，請在 GitHub 上提交 issue。

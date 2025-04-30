@@ -29,13 +29,15 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
+    transition: background-color 0.15s ease;
 }
 
 .slash-command-item:last-child {
     margin-bottom: 10px;
 }
 
-.slash-command-item:hover {
+.slash-command-item:hover,
+.slash-command-item.is-selected {
     background-color: var(--background-modifier-hover);
 }
 

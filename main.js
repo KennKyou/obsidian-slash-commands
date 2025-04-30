@@ -14,7 +14,6 @@ export default class SlashCommandsPlugin extends Plugin {
           { name: "標題3", description: "三級標題", insert: "### ", icon: "heading-3" },
           { name: "項目符號列表", description: "無序列表", insert: "- ", icon: "list" },
           { name: "有序列表", description: "數字列表", insert: "1. ", icon: "list-ordered" },
-          { name: "待辦清單", description: "待辦事項", insert: "- [ ] ", icon: "checkbox" },
           { name: "引言", description: "引言區塊", insert: "> ", icon: "quote" },
           { name: "表格", description: "表格", insert: "|表頭|表頭|\n|---|---|\n|內容|內容|\n|內容|內容|", icon: "table" },
         ]
@@ -35,6 +34,12 @@ export default class SlashCommandsPlugin extends Plugin {
           { name: "WARNING", description: "WARNING 區塊", insert: "::: warning 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
           { name: "DANGER", description: "DANGER 區塊", insert: "::: danger 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
           { name: "DETAILS", description: "DETAILS 區塊", insert: "::: details 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
+        ]
+      },
+      {
+        name: "目前只適配在 Obsidian",
+        commands: [
+          { name: "待辦清單", description: "待辦事項", insert: "- [ ] ", icon: "checkbox" },
         ]
       }
     ];
@@ -98,7 +103,14 @@ class SlashCommandModal extends Modal {
     super(app);
     this.commandGroups = commandGroups;
     this.editor = editor;
-    this.shouldInsertSlash = true; // 預設需要插入斜線
+    this.shouldInsertSlash = true;
+    this.selectedIndex = 0;
+    this.allCommands = this.flattenCommands();
+    this.keydownHandler = this.handleKeydown.bind(this);
+  }
+
+  flattenCommands() {
+    return this.commandGroups.flatMap(group => group.commands);
   }
 
   onOpen() {
@@ -106,18 +118,21 @@ class SlashCommandModal extends Modal {
     contentEl.empty();
     contentEl.addClass('slash-command-modal');
 
+    document.addEventListener('keydown', this.keydownHandler);
+
     this.commandGroups.forEach(group => {
-      // 創建分組標題
       const groupDiv = contentEl.createDiv('slash-command-group');
       groupDiv.createEl('div', { text: group.name, cls: 'slash-command-group-name' });
 
-      // 創建分組內的命令
-      group.commands.forEach(command => {
+      group.commands.forEach((command, index) => {
         const div = groupDiv.createDiv('slash-command-item');
+        if (index === this.selectedIndex) {
+          div.addClass('is-selected');
+        }
+        
         const nameDiv = div.createEl('div', { cls: 'slash-command-name-container' });
         const nameContainer = nameDiv.createEl('div', { cls: 'slash-command-name' });
         
-        // 添加圖標
         if (command.icon) {
           const iconDiv = nameContainer.createDiv('slash-command-icon');
           const iconSvg = this.getIconSvg(command.icon);
@@ -128,19 +143,82 @@ class SlashCommandModal extends Modal {
         
         nameContainer.createSpan({ text: command.name });
         
-        // 添加快捷鍵提示（如果有的話）
         const shortcut = this.getShortcut(command);
         if (shortcut) {
           nameDiv.createEl('div', { text: shortcut, cls: 'slash-command-shortcut' });
         }
         
         div.createEl('div', { text: command.description, cls: 'slash-command-description' });
+        
+        // 添加滑鼠懸停事件
+        div.onmouseenter = () => {
+          this.selectedIndex = index;
+          this.updateSelection();
+        };
+        
         div.onclick = () => {
           this.onChooseSuggestion(command);
           this.close();
         };
       });
     });
+  }
+
+  handleKeydown(evt) {
+    switch (evt.key) {
+      case 'ArrowUp':
+        evt.preventDefault();
+        this.moveSelection(-1);
+        break;
+      case 'ArrowDown':
+        evt.preventDefault();
+        this.moveSelection(1);
+        break;
+      case 'Enter':
+        evt.preventDefault();
+        this.selectCurrentCommand();
+        break;
+    }
+  }
+
+  moveSelection(direction) {
+    const newIndex = this.selectedIndex + direction;
+    if (newIndex >= 0 && newIndex < this.allCommands.length) {
+      this.selectedIndex = newIndex;
+      this.updateSelection(true);
+    }
+  }
+
+  updateSelection(shouldScroll = false) {
+    const items = this.contentEl.querySelectorAll('.slash-command-item');
+    items.forEach((item, index) => {
+      if (index === this.selectedIndex) {
+        item.addClass('is-selected');
+        if (shouldScroll) {
+          item.scrollIntoView({ block: 'nearest' });
+        }
+      } else {
+        item.removeClass('is-selected');
+      }
+    });
+  }
+
+  selectCurrentCommand() {
+    if (this.allCommands[this.selectedIndex]) {
+      this.onChooseSuggestion(this.allCommands[this.selectedIndex]);
+      this.close();
+    }
+  }
+
+  onClose() {
+    document.removeEventListener('keydown', this.keydownHandler);
+    if (this.shouldInsertSlash && this.editor) {
+      const cursor = this.editor.getCursor();
+      this.editor.replaceRange("/", cursor);
+      this.editor.setCursor({ line: cursor.line, ch: cursor.ch + 1 });
+    }
+    const { contentEl } = this;
+    contentEl.empty();
   }
 
   getIconSvg(iconName) {
@@ -178,16 +256,5 @@ class SlashCommandModal extends Modal {
       "程式碼": "```",
     };
     return shortcuts[command.name] || "";
-  }
-
-  onClose() {
-    if (this.shouldInsertSlash && this.editor) {
-      const cursor = this.editor.getCursor();
-      this.editor.replaceRange("/", cursor);
-      // 將游標移動到斜線後面
-      this.editor.setCursor({ line: cursor.line, ch: cursor.ch + 1 });
-    }
-    const { contentEl } = this;
-    contentEl.empty();
   }
 } 
