@@ -1,0 +1,12 @@
+{
+    "id": "slash-commands",
+    "name": "Slash Commands",
+    "version": "1.0.0",
+    "minAppVersion": "1.0.0",
+    "description": "Add Notion-like slash commands to Obsidian",
+    "author": "Ken Chiang",
+    "authorUrl": "https://github.com/KennKyou",
+    "isDesktopOnly": false,
+    "js": "main.js",
+    "css": "styles.css"
+} 

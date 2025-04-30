@@ -1,0 +1,18 @@
+{
+    "name": "slash-commands",
+    "version": "1.0.0",
+    "description": "Add Notion-like slash commands to Obsidian",
+    "main": "main.js",
+    "scripts": {
+        "dev": "node esbuild.config.mjs",
+        "build": "node esbuild.config.mjs production",
+        "version": "node version-bump.mjs && git add manifest.json versions.json"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "esbuild": "^0.19.11",
+        "obsidian": "latest"
+    }
+}
