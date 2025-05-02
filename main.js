@@ -93,7 +93,7 @@ export default class SlashCommandsPlugin extends Plugin {
           { name: this.t('bullet-list'), description: this.t('bullet-list-desc'), insert: "- ", icon: "list" },
           { name: this.t('ordered-list'), description: this.t('ordered-list-desc'), insert: "1. ", icon: "list-ordered" },
           { name: this.t('quote'), description: this.t('quote-desc'), insert: "> ", icon: "quote" },
-          { name: this.t('table'), description: this.t('table-desc'), insert: "|表頭|表頭|\n|---|---|\n|內容|內容|\n|內容|內容|", icon: "table" },
+          { name: this.t('table'), description: this.t('table-desc'), insert: `|${this.t('table-header')}|${this.t('table-header')}|\n|---|---|\n|${this.t('table-content')}|${this.t('table-content')}|\n|${this.t('table-content')}|${this.t('table-content')}|`, icon: "table" },
           { name: this.t('divider'), description: this.t('divider-desc'), insert: "---", icon: "minus" },
         ]
       },
@@ -101,9 +101,9 @@ export default class SlashCommandsPlugin extends Plugin {
         name: this.t('special-blocks'),
         commands: [
           { name: this.t('backlink'), description: this.t('backlink-desc'), insert: "[[]]", icon: "link2" },
-          { name: this.t('link'), description: this.t('link-desc'), insert: "[連結名稱](連結網址)", icon: "link" },
-          { name: this.t('simple-link'), description: this.t('simple-link-desc'), insert: "<連結網址>", icon: "link" },
-          { name: this.t('image'), description: this.t('image-desc'), insert: "![圖片名稱](圖片連結)", icon: "image" },
+          { name: this.t('link'), description: this.t('link-desc'), insert: `[${this.t('link-name')}](${this.t('link-url')})`, icon: "link" },
+          { name: this.t('simple-link'), description: this.t('simple-link-desc'), insert: `<${this.t('link-url')}>`, icon: "link" },
+          { name: this.t('image'), description: this.t('image-desc'), insert: `![${this.t('image-name')}](${this.t('image-url')})`, icon: "image" },
           { name: this.t('footnote'), description: this.t('footnote-desc'), insert: "^", icon: "hash" },
           { name: this.t('code'), description: this.t('code-desc'), insert: "``` js\n\n```", icon: "code" },
         ]
@@ -111,11 +111,11 @@ export default class SlashCommandsPlugin extends Plugin {
       {
         name: this.t('custom-containers'),
         commands: [
-          { name: this.t('info'), description: this.t('info-desc'), insert: "::: info 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
-          { name: this.t('tip'), description: this.t('tip-desc'), insert: "::: tip 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
-          { name: this.t('warning'), description: this.t('warning-desc'), insert: "::: warning 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
-          { name: this.t('danger'), description: this.t('danger-desc'), insert: "::: danger 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
-          { name: this.t('details'), description: this.t('details-desc'), insert: "::: details 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
+          { name: this.t('info'), description: this.t('info-desc'), insert: `::: info ${this.t('custom-title')}\n\n:::`, icon: "square-dashed" },
+          { name: this.t('tip'), description: this.t('tip-desc'), insert: `::: tip ${this.t('custom-title')}\n\n:::`, icon: "square-dashed" },
+          { name: this.t('warning'), description: this.t('warning-desc'), insert: `::: warning ${this.t('custom-title')}\n\n:::`, icon: "square-dashed" },
+          { name: this.t('danger'), description: this.t('danger-desc'), insert: `::: danger ${this.t('custom-title')}\n\n:::`, icon: "square-dashed" },
+          { name: this.t('details'), description: this.t('details-desc'), insert: `::: details ${this.t('custom-title')}\n\n:::`, icon: "square-dashed" },
         ]
       },
       {
