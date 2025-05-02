@@ -200,6 +200,9 @@ class SlashCommandsSettingTab extends PluginSettingTab {
       .addDropdown(dropdown => dropdown
         .addOption('en', 'English')
         .addOption('zh-TW', '繁體中文')
+        .addOption('zh-CN', '简体中文')
+        .addOption('ja', '日本語')
+        .addOption('ko', '한국어')
         .setValue(this.plugin.settings.language)
         .onChange(async (value) => {
           this.plugin.settings.language = value;

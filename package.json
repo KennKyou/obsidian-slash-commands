@@ -1,6 +1,6 @@
 {
-    "name": "slash-commands",
-    "version": "1.1.1",
+    "name": "slash-flow",
+    "version": "2.0.0",
     "description": "Add Notion-like slash commands to Obsidian",
     "main": "main.js",
     "scripts": {
