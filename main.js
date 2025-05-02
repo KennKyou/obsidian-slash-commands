@@ -7,7 +7,7 @@ export default class SlashCommandsPlugin extends Plugin {
       {
         name: "基本區塊",
         commands: [
-          { name: "斜線符號", description: "插入斜線符號 /", insert: "/", icon: "forward-slash" },
+          { name: "斜線符號", description: "斜線符號 /", insert: "/", icon: "forward-slash" },
           { name: "文字", description: "普通文字", insert: "", icon: "text" },
           { name: "標題1", description: "一級標題", insert: "# ", icon: "heading-1" },
           { name: "標題2", description: "二級標題", insert: "## ", icon: "heading-2" },
@@ -26,7 +26,7 @@ export default class SlashCommandsPlugin extends Plugin {
           { name: "連結", description: "連結", insert: "[連結名稱](連結網址)", icon: "link" },
           { name: "簡易超連結", description: "簡易超連結", insert: "<連結網址>", icon: "link" },
           { name: "圖片", description: "圖片", insert: "![圖片名稱](圖片連結)", icon: "image" },
-          { name: "標註", description: "標註", insert: "^", icon: "hash" },
+          { name: "標註", description: "標註（只會在編輯模式顯示）", insert: "^", icon: "hash" },
           { name: "程式碼", description: "程式碼區塊", insert: "``` js\n\n```", icon: "code" },
         ]
       },
@@ -275,7 +275,7 @@ class SlashCommandModal extends Modal {
       "標題3": "###",
       "項目符號列表": "-",
       "有序列表": "1.",
-      "待辦清單": "[]",
+      "待辦清單": "- [ ]",
       "引言": ">",
       "雙向連結": "[[]]",
       "標註": "^",
