@@ -2,7 +2,7 @@ import { Plugin, Modal, MarkdownView, Setting, PluginSettingTab } from 'obsidian
 import { createIcons, Menu, ArrowRight, Globe, Slash, Type, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Table, Minus, Link2, Link, Image, Hash, Code, SquareDashed, Italic, Bold, Highlighter, ListChecks } from 'lucide';
 import { locales } from './locales';
 
-export default class SlashCommandsPlugin extends Plugin {
+export default class SlashFlowPlugin extends Plugin {
   settings = {};
 
   async onload() {
@@ -51,8 +51,8 @@ export default class SlashCommandsPlugin extends Plugin {
 
     // 添加命令
     this.addCommand({
-      id: 'show-slash-commands',
-      name: 'Show Slash Commands',
+      id: 'show-slash-flow',
+      name: 'Show Slash Flow',
       editorCallback: (editor) => {
         this.showCommandPalette(editor);
       }
@@ -77,7 +77,7 @@ export default class SlashCommandsPlugin extends Plugin {
     });
 
     // 添加設定選項
-    this.addSettingTab(new SlashCommandsSettingTab(this.app, this));
+    this.addSettingTab(new SlashFlowSettingTab(this.app, this));
   }
 
   updateCommandGroups() {
@@ -150,7 +150,7 @@ export default class SlashCommandsPlugin extends Plugin {
   }
 
   showCommandPalette(editor) {
-    const modal = new SlashCommandModal(this.app, this.commandGroups, editor);
+    const modal = new SlashFlowModal(this.app, this.commandGroups, editor);
     modal.onChooseSuggestion = (command) => {
       const cursor = editor.getCursor();
       editor.replaceRange(command.insert, cursor);
@@ -181,7 +181,7 @@ export default class SlashCommandsPlugin extends Plugin {
   }
 }
 
-class SlashCommandsSettingTab extends PluginSettingTab {
+class SlashFlowSettingTab extends PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
     this.plugin = plugin;
@@ -192,7 +192,7 @@ class SlashCommandsSettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    containerEl.createEl('h2', { text: 'Slash Commands Settings' });
+    containerEl.createEl('h2', { text: 'Slash Flow Settings' });
 
     new Setting(containerEl)
       .setName('Language')
@@ -212,7 +212,7 @@ class SlashCommandsSettingTab extends PluginSettingTab {
   }
 }
 
-class SlashCommandModal extends Modal {
+class SlashFlowModal extends Modal {
   constructor(app, commandGroups, editor) {
     super(app);
     this.commandGroups = commandGroups;
@@ -249,7 +249,7 @@ class SlashCommandModal extends Modal {
   }
 
   t(key) {
-    return locales[this.app.plugins.getPlugin('slash-commands').settings.language][key] || key;
+    return locales[this.app.plugins.getPlugin('slash-flow').settings.language][key] || key;
   }
 
   flattenCommands() {
