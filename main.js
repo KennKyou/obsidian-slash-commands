@@ -142,7 +142,7 @@ export default class SlashCommandsPlugin extends Plugin {
   }
 
   async loadSettings() {
-    this.settings = Object.assign({}, { language: 'zh-TW' }, await this.loadData());
+    this.settings = Object.assign({}, { language: 'en' }, await this.loadData());
   }
 
   async saveSettings() {
@@ -198,8 +198,8 @@ class SlashCommandsSettingTab extends PluginSettingTab {
       .setName('Language')
       .setDesc('Select the display language')
       .addDropdown(dropdown => dropdown
-        .addOption('zh-TW', '繁體中文')
         .addOption('en', 'English')
+        .addOption('zh-TW', '繁體中文')
         .setValue(this.plugin.settings.language)
         .onChange(async (value) => {
           this.plugin.settings.language = value;
@@ -243,6 +243,10 @@ class SlashCommandModal extends Modal {
       Highlighter,
       ListChecks
     };
+  }
+
+  t(key) {
+    return locales[this.app.plugins.getPlugin('slash-commands').settings.language][key] || key;
   }
 
   flattenCommands() {
@@ -371,26 +375,26 @@ class SlashCommandModal extends Modal {
 
   getShortcut(command) {
     const shortcuts = {
-      "斜線符號": "/",
-      "標題1": "#",
-      "標題2": "##",
-      "標題3": "###",
-      "項目符號列表": "-",
-      "有序列表": "1.",
-      "待辦清單": "- [ ]",
-      "引言": ">",
-      "雙向連結": "[[]]",
-      "標註": "^",
-      "程式碼": "```",
-      "分隔線": "---",
-      "斜體字": "**",
-      "粗體字": "****",
-      "刪除線": "~~~~",
-      "斜粗體": "******",
-      "螢光標記文字": "====",
-      "連結": "[]()",
-      "簡易超連結": "<>",
-      "圖片": "![]()",
+      [this.t('slash-symbol')]: "/",
+      [this.t('heading1')]: "#",
+      [this.t('heading2')]: "##",
+      [this.t('heading3')]: "###",
+      [this.t('bullet-list')]: "-",
+      [this.t('ordered-list')]: "1.",
+      [this.t('todo')]: "- [ ]",
+      [this.t('quote')]: ">",
+      [this.t('backlink')]: "[[]]",
+      [this.t('footnote')]: "^",
+      [this.t('code')]: "```",
+      [this.t('divider')]: "---",
+      [this.t('italic')]: "**",
+      [this.t('bold')]: "****",
+      [this.t('strikethrough')]: "~~~~",
+      [this.t('bold-italic')]: "******",
+      [this.t('highlight')]: "====",
+      [this.t('link')]: "[]()",
+      [this.t('simple-link')]: "<>",
+      [this.t('image')]: "![]()",
     };
     return shortcuts[command.name] || "";
   }
