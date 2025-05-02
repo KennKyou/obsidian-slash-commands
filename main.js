@@ -1,8 +1,13 @@
-import { Plugin, Modal, MarkdownView } from 'obsidian';
+import { Plugin, Modal, MarkdownView, Setting, PluginSettingTab } from 'obsidian';
 import { createIcons, Menu, ArrowRight, Globe, Slash, Type, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Table, Minus, Link2, Link, Image, Hash, Code, SquareDashed, Italic, Bold, Highlighter, ListChecks } from 'lucide';
+import { locales } from './locales';
 
 export default class SlashCommandsPlugin extends Plugin {
+  settings = {};
+
   async onload() {
+    await this.loadSettings();
+
     // 初始化 Lucide 圖標
     const icons = {
       Menu,
@@ -42,60 +47,7 @@ export default class SlashCommandsPlugin extends Plugin {
       }
     });
 
-    this.commandGroups = [
-      {
-        name: "基本區塊",
-        commands: [
-          { name: "斜線符號", description: "斜線符號 /", insert: "/", icon: "slash" },
-          { name: "文字", description: "普通文字", insert: "", icon: "type" },
-          { name: "標題1", description: "一級標題", insert: "# ", icon: "heading1" },
-          { name: "標題2", description: "二級標題", insert: "## ", icon: "heading2" },
-          { name: "標題3", description: "三級標題", insert: "### ", icon: "heading3" },
-          { name: "項目符號列表", description: "無序列表", insert: "- ", icon: "list" },
-          { name: "有序列表", description: "數字列表", insert: "1. ", icon: "list-ordered" },
-          { name: "引言", description: "引言區塊", insert: "> ", icon: "quote" },
-          { name: "表格", description: "表格", insert: "|表頭|表頭|\n|---|---|\n|內容|內容|\n|內容|內容|", icon: "table" },
-          { name: "分隔線", description: "分隔線", insert: "---", icon: "minus" },
-        ]
-      },
-      {
-        name: "特殊區塊",
-        commands: [
-          { name: "雙向連結", description: "雙向連結", insert: "[[]]", icon: "link2" },
-          { name: "連結", description: "連結", insert: "[連結名稱](連結網址)", icon: "link" },
-          { name: "簡易超連結", description: "簡易超連結", insert: "<連結網址>", icon: "link" },
-          { name: "圖片", description: "圖片", insert: "![圖片名稱](圖片連結)", icon: "image" },
-          { name: "標註", description: "標註（只會在編輯模式顯示）", insert: "^", icon: "hash" },
-          { name: "程式碼", description: "程式碼區塊", insert: "``` js\n\n```", icon: "code" },
-        ]
-      },
-      {
-        name: "自定義容器（VitePress）",
-        commands: [
-          { name: "INFO", description: "INFO 區塊", insert: "::: info 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
-          { name: "TIP", description: "TIP 區塊", insert: "::: tip 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
-          { name: "WARNING", description: "WARNING 區塊", insert: "::: warning 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
-          { name: "DANGER", description: "DANGER 區塊", insert: "::: danger 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
-          { name: "DETAILS", description: "DETAILS 區塊", insert: "::: details 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
-        ]
-      },
-      {
-        name: "字體效果",
-        commands: [
-          { name: "斜體字", description: "斜體字", insert: "**", icon: "italic" },
-          { name: "粗體字", description: "粗體字", insert: "****", icon: "bold" },
-          { name: "斜粗體", description: "斜粗體", insert: "******", icon: "bold" },
-          { name: "刪除線", description: "刪除線", insert: "~~~~", icon: "minus" },
-        ]
-      },
-      {
-        name: "目前只適配在 Obsidian",
-        commands: [
-          { name: "待辦清單", description: "待辦事項", insert: "- [ ] ", icon: "List-checks" },
-          { name: "螢光標記文字", description: "螢光標記文字", insert: "====", icon: "highlighter" },
-        ]
-      }
-    ];
+    this.updateCommandGroups();
 
     // 添加命令
     this.addCommand({
@@ -123,6 +75,78 @@ export default class SlashCommandsPlugin extends Plugin {
         }
       }
     });
+
+    // 添加設定選項
+    this.addSettingTab(new SlashCommandsSettingTab(this.app, this));
+  }
+
+  updateCommandGroups() {
+    this.commandGroups = [
+      {
+        name: this.t('basic-blocks'),
+        commands: [
+          { name: this.t('slash-symbol'), description: this.t('slash-symbol-desc'), insert: "/", icon: "slash" },
+          { name: this.t('text'), description: this.t('text-desc'), insert: "", icon: "type" },
+          { name: this.t('heading1'), description: this.t('heading1-desc'), insert: "# ", icon: "heading1" },
+          { name: this.t('heading2'), description: this.t('heading2-desc'), insert: "## ", icon: "heading2" },
+          { name: this.t('heading3'), description: this.t('heading3-desc'), insert: "### ", icon: "heading3" },
+          { name: this.t('bullet-list'), description: this.t('bullet-list-desc'), insert: "- ", icon: "list" },
+          { name: this.t('ordered-list'), description: this.t('ordered-list-desc'), insert: "1. ", icon: "list-ordered" },
+          { name: this.t('quote'), description: this.t('quote-desc'), insert: "> ", icon: "quote" },
+          { name: this.t('table'), description: this.t('table-desc'), insert: "|表頭|表頭|\n|---|---|\n|內容|內容|\n|內容|內容|", icon: "table" },
+          { name: this.t('divider'), description: this.t('divider-desc'), insert: "---", icon: "minus" },
+        ]
+      },
+      {
+        name: this.t('special-blocks'),
+        commands: [
+          { name: this.t('backlink'), description: this.t('backlink-desc'), insert: "[[]]", icon: "link2" },
+          { name: this.t('link'), description: this.t('link-desc'), insert: "[連結名稱](連結網址)", icon: "link" },
+          { name: this.t('simple-link'), description: this.t('simple-link-desc'), insert: "<連結網址>", icon: "link" },
+          { name: this.t('image'), description: this.t('image-desc'), insert: "![圖片名稱](圖片連結)", icon: "image" },
+          { name: this.t('footnote'), description: this.t('footnote-desc'), insert: "^", icon: "hash" },
+          { name: this.t('code'), description: this.t('code-desc'), insert: "``` js\n\n```", icon: "code" },
+        ]
+      },
+      {
+        name: this.t('custom-containers'),
+        commands: [
+          { name: this.t('info'), description: this.t('info-desc'), insert: "::: info 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
+          { name: this.t('tip'), description: this.t('tip-desc'), insert: "::: tip 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
+          { name: this.t('warning'), description: this.t('warning-desc'), insert: "::: warning 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
+          { name: this.t('danger'), description: this.t('danger-desc'), insert: "::: danger 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
+          { name: this.t('details'), description: this.t('details-desc'), insert: "::: details 自訂標題（可留空）\n\n:::", icon: "square-dashed" },
+        ]
+      },
+      {
+        name: this.t('font-effects'),
+        commands: [
+          { name: this.t('italic'), description: this.t('italic-desc'), insert: "**", icon: "italic" },
+          { name: this.t('bold'), description: this.t('bold-desc'), insert: "****", icon: "bold" },
+          { name: this.t('bold-italic'), description: this.t('bold-italic-desc'), insert: "******", icon: "bold" },
+          { name: this.t('strikethrough'), description: this.t('strikethrough-desc'), insert: "~~~~", icon: "minus" },
+        ]
+      },
+      {
+        name: this.t('obsidian-only'),
+        commands: [
+          { name: this.t('todo'), description: this.t('todo-desc'), insert: "- [ ] ", icon: "List-checks" },
+          { name: this.t('highlight'), description: this.t('highlight-desc'), insert: "====", icon: "highlighter" },
+        ]
+      }
+    ];
+  }
+
+  t(key) {
+    return locales[this.settings.language][key] || key;
+  }
+
+  async loadSettings() {
+    this.settings = Object.assign({}, { language: 'zh-TW' }, await this.loadData());
+  }
+
+  async saveSettings() {
+    await this.saveData(this.settings);
   }
 
   showCommandPalette(editor) {
@@ -154,6 +178,34 @@ export default class SlashCommandsPlugin extends Plugin {
       modal.shouldInsertSlash = false; // 標記不需要插入斜線
     };
     modal.open();
+  }
+}
+
+class SlashCommandsSettingTab extends PluginSettingTab {
+  constructor(app, plugin) {
+    super(app, plugin);
+    this.plugin = plugin;
+  }
+
+  display() {
+    const { containerEl } = this;
+
+    containerEl.empty();
+
+    containerEl.createEl('h2', { text: 'Slash Commands Settings' });
+
+    new Setting(containerEl)
+      .setName('Language')
+      .setDesc('Select the display language')
+      .addDropdown(dropdown => dropdown
+        .addOption('zh-TW', '繁體中文')
+        .addOption('en', 'English')
+        .setValue(this.plugin.settings.language)
+        .onChange(async (value) => {
+          this.plugin.settings.language = value;
+          await this.plugin.saveSettings();
+          this.plugin.updateCommandGroups(); // 更新命令群組
+        }));
   }
 }
 
